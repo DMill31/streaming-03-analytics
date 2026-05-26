@@ -100,8 +100,7 @@ After you get a copy of this repo in your own GitHub account,
 open a machine terminal in your `Repos` folder:
 
 ```bash
-# Replace username with YOUR GitHub username.
-git clone https://github.com/username/streaming-03-analytics
+git clone https://github.com/DMill31/streaming-03-analytics
 
 cd streaming-03-analytics
 code .
