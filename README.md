@@ -222,7 +222,7 @@ Clear the terminal, then start the consumer.
 
 ```shell
 clear
-uv run python -m streaming.kafka_consumer_case
+uv run python -m streaming.kafka_consumer_miller
 ```
 
 To start fresh, see
@@ -230,6 +230,23 @@ To start fresh, see
 to delete the topic and recreate it.
 
 </details>
+
+## Technical Modification
+
+The modification for this project added multiple new python files.
+
+Both a new data_contract and derived_fields file was created.
+
+The meat of the modification is in the new consumer.
+
+As well as having a new Kafka topic and more messages,
+the new consumer also adds an extra derived field.
+
+The new field is day_of_week, which is derived from
+the datetime column to tell us the exact day of that purchase.
+
+This can be analyzed to see any patterns for certain weekdays,
+and it was also helpful practice to work with derived fields.
 
 ## Notes
 
