@@ -1,10 +1,11 @@
-"""src/streaming/kafka_consumer_miller.py.
+"""src/streaming/kafka_consumer_paypal_miller.py.
 
 Kafka consumer: analytics
 
 Reads sales messages from a Kafka topic and runs the full pipeline:
   - Validates each message against the data contract
   - Computes derived fields (subtotal, tax amount, total)
+  - Only accepts messages that contain "paypal" as the payment method
 
 Start with main() at the bottom.
 Work up to see how it all fits together.
@@ -17,7 +18,7 @@ Date: 2026-05
 
 Terminal command to run this file from the root project folder:
 
-    uv run python -m streaming.kafka_consumer_miller
+    uv run python -m streaming.kafka_consumer_paypal_miller
 """
 
 # === DECLARE IMPORTS ===

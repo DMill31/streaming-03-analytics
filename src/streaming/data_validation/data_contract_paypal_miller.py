@@ -1,4 +1,4 @@
-"""src/streaming/data_validation/data_contract_case.py.
+"""src/streaming/data_validation/data_contract_paypal_miller.py.
 
 Defines what a valid message looks like for this project:
 required fields, allowed values, reference table fields,
@@ -9,11 +9,6 @@ Use the data/*.csv files as the source of truth for the data contract.
 The reusable validation helpers live in core/validation_utils.py.
 The domain-specific field rules and validate_sale_record live here.
 
-OBS:
-  Don't edit this file - it should remain a working example.
-  Copy it, rename it data_contract_yourname.py, and modify your copy
-  to adapt the rules for a different domain.
-  Then, import from your data_contract instead.
 """
 
 # === DECLARE IMPORTS ===
