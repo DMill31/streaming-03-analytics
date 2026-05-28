@@ -23,97 +23,202 @@ to get these projects running on your machine.
 
 ### Dataset
 
-Describe the dataset used by your Kafka producer.
+The Kafka producer uses the sales.csv dataset in the data folder.
 
-Include:
+The dataset contains records of purchases, with each record containing the info:
 
-- the name of the dataset file
-- what kind of records it contains
-- which fields are included in each record
-- whether you used the original sales dataset or modified it
-- any reference datasets used for validation or enrichment
+- order_id
+- datetime
+- region_id
+- currency_code
+- product_id
+- unit_price
+- quantity
+- is_online
+- customer_id
+- is_new_customer
+- device_type
+- payment_method
+- referral_source
+- discount_code
+- customer_note
+
+For this project, the original sales dataset was used.
+Nothing was modified.
+
+Two reference datasets were used:
+
+- regions.csv
+  - For mapping region_id to tax rates
+- products.csv
+  - For obtaining all the product_ids
 
 ### Data Contract
 
-Describe the rules your messages must follow.
+For a message to be valid, it much match the requirements
+within the data contract.
 
-Include:
+There are required fields that must be present:
 
-- which fields are required
-- which fields are optional
-- which values must match allowed values or reference data
-- what makes a message valid or invalid
+- order_id
+- datetime
+- region_id
+- currency_code
+- product_id
+- unit_price
+- quantity
+- is_online
+- customer_id
+- payment_method
+
+The rest of the fields from sales.csv are optional.
+
+Some rules describe allowed values that are the only
+available entries
+
+For instance, device_type can only be one of the
+following values:
+
+- mobile
+- desktop
+- tablet
+
+Similar rules exist for payment_method, referral_source,
+and currency_code
+
+payment_method in this project only allows paypal, as that
+was the modification done.
+
+Allowed referral_source:
+
+- organic
+- paid_search
+- email
+- social
+
+Allowed currency_code:
+
+- USD
+- CAD
+- MXN
 
 ### Kafka Messages
 
-Describe the messages sent through Kafka.
+The script kafka_producer_case.py in the src/streaming folder
+was used to send messages.
 
-Include:
+Each message sent is a row from the sales dataset.
 
-- what your producer sends
-- which Kafka topic you used
-- what message key you used, if any
-- whether/how you changed the message fields
+The Kafka topic used was streaming-03-analytics-paypal-miller.
+
+The region_id field was used as the message key.
+
+The message fields were not altered by the producer.
+
+The day of the week was added to each message through the consumer.
 
 ### Consumer Validation
 
-Describe how your consumer checks each message.
+Before being consumed, each message is validated.
 
-Include:
+They're first checked across the rules stated in the data contract.
+If they don't pass every single rule, then the message is rejected.
 
-- what validation checks are performed
-- what happens when a message is accepted
-- what happens when a message is rejected or skipped
-- how validation helps protect the results
+In this project, any message that didn't contain the payment method
+of paypal was skipped, meaning it was not consumed.
+
+This was done so that analysis could be done on paypal specific
+purchases, and it also helps keep the data clean.
+
+If validation was not done, then possible bad data or unwanted
+data would be consumed and added to our output, impacting the
+final result.
 
 ### Data Engineering and Enrichment
 
-Describe what your consumer computes or adds.
+Four fields were derived from the original message data:
 
-Include:
+- subtotal: quantity * unit_price
+- tax_amount: tax from regions.csv applied to the subtotal
+- total: subtotal + tax_amount
+- day_of_week: derived from datetime to get the specifc day
 
-- which derived fields are created
-- what reference data is used
-- how raw fields are transformed into more useful fields
-- whether you changed or added any calculations (be specific)
+Most derived fields are created through simple math, but others,
+like the day of the week, were transformed through the
+use of python libraries.
 
 ### Streaming Analytics
 
-Describe the running summaries created as messages arrive.
+The running statistics tracked were:
 
-Include:
+- total sales
+- average sale amount
+- minimum sale amount
+- maximum sale amount
 
-- what values are summarized
-- whether you tracked totals, averages, minimums, or maximums
-- how the running statistics changed as messages were consumed
+With each message consumed, the running statistics are updated
+in real-time.
+
+Orders with high sale amounts increased the average, and possibly
+the maximum.
+
+Orders with low sale amounts decreased the average, and possibly
+the minimum.
 
 ### Experiments
 
-Describe the small technical changes you made.
+The Phase 4 change worked with 5 messages sent from the producer.
 
-Include at least one Phase 4 change and one Phase 5 application.
+In this phase, the day of the week was added to each message output.
+
+The Phase 5 change worked with 10 messages sent from the producer.
+
+In this phase, the day of the week was still being added.
+In addition, now only messages that contained sales with paypal
+would be accepted.
 
 ### Results
 
-Describe what happened when you ran the producer and consumer.
+The producer always ran successfully.
 
-Include:
+The consumer also ran successfully, but it took time to get
+it to work properly.
 
-- whether messages were produced successfully
-- whether messages were consumed successfully
-- how many messages were accepted
-- how many messages were rejected or skipped
-- what appeared in the output CSV file
-- what appeared in the logs
+Of the 10 messages sent, 7 were accepted.
+
+The other 3 were skipped due to not having paypal as the
+payment method.
+
+The output CSV file contains the 7 accepted messages with
+their derived fields added.
+
+In the logs, the running statistics and each order being
+accepted or rejected can be found.
 
 ### Interpretation
 
-Explain what the validation and analytics workflow showed you.
+In comparison to the original example, this project not only
+works with significantly more messages, but it also creates more
+derived fields and filters data based on payment method.
 
-Include:
+This project showcased the importance of validation when working
+with streaming data.
 
-- what changed from the original example
-- what you learned about validating streaming messages
-- what you learned about enriching messages as they arrive
-- what the running summaries could tell a business or organization
-- what business intelligence was gained from the validated and processed messages
+Without a data contract and a way to check data before consuming,
+there's potential for lots of bad data to muddle your analysis.
+
+Enrichment is also super helpful, as it can give lots of insights
+by creating new derived fields.  For instance, in the sales data,
+having the total sale amount is very helpful.
+
+The running statistics give a constant real-time update on how
+things are going.  When you can see the running average decreasing,
+you know that there are smaller sales being made.
+
+Now that the messages are filtered to only paypal sales, analytics can
+be done to find patterns between these purchases.
+Similarly, the data can also be filtered by other payment methods, or
+a single method can even be excluded.
+
+The one thing that can be noted would be that paypal seems to be a very
+popular payment method, as 7 of the 10 messages sent used paypal.
