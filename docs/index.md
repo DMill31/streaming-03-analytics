@@ -141,7 +141,7 @@ Four fields were derived from the original message data:
 - subtotal: quantity * unit_price
 - tax_amount: tax from regions.csv applied to the subtotal
 - total: subtotal + tax_amount
-- day_of_week: derived from datetime to get the specifc day
+- day_of_week: derived from datetime to get the specific day
 
 Most derived fields are created through simple math, but others,
 like the day of the week, were transformed through the
